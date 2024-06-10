@@ -1,37 +1,59 @@
 let loaded = (eventLoaded) => {
     window.alert("Landing page loaded");
     console.log(eventLoaded);
-    let myform = document.getElementById('formulario');
-    debugger;
-  
+
+    const formulario = document.getElementById('formulario');
+    formulario.addEventListener('submit', (eventSubmit) => {
+        eventSubmit.preventDefault();
+        
+        let nombreInput = document.getElementById('nombreInput');
+        let emailInput = document.getElementById('emailInput');
+        let selectBoxInput = document.getElementById('selectBoxInput');
+
+        // Validación del contenido del input nombre
+        if (nombreInput.value.length === 0) {
+            nombreInput.focus();
+            alert('Ingrese un nombre válido');
+            return;
+        }
+
+        // Validación del contenido del input email
+        if (emailInput.value.length === 0) {
+            emailInput.focus();
+            alert('Ingrese un correo válido');
+            return;
+        }
+
+        // Validación del contenido del select box
+        if (selectBoxInput.value === "") {
+            selectBoxInput.focus();
+            alert('Seleccione un color válido');
+            return;
+        }
+
+        const nombre = nombreInput.value;
+        const email = emailInput.value;
+        const colorFavorito = selectBoxInput.value;
+
+        const datos = {
+            nombre: nombre,
+            email: email,
+            colorFavorito: colorFavorito
+        };
+
+        fetch('https://dawmproyecto-default-rtdb.firebaseio.com/coleccion.json', {
+            method: 'POST',
+            body: JSON.stringify(datos),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(respuesta => respuesta.json())
+        .then(datos => {
+            console.log(datos); 
+        })
+        .catch(error => console.error(error));
+    });
 }
 
 window.addEventListener("DOMContentLoaded", loaded);
-
-let completarFormulario = ()=>{
-    const formulario = document.getElementById('formulario');
-    formulario.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const nombre = document.getElementById('nombre').value;
-    const email = document.getElementById('email').value;
-    const mensaje = document.getElementById('mensaje').value;
-    const datos = {
-    nombre: nombre,
-    email: email,
-    mensaje: mensaje
-    };
-    fetch('https://dawmproyecto-default-rtdb.firebaseio.com/coleccion.json', {
-    method: 'POST',
-    body: JSON.stringify(datos),
-    headers: {
-    'Content-Type': 'application/json'
-    }
-    })
-    .then(respuesta => respuesta.json())
-    .then(datos => {
-    console.log(datos); 
-    servidor
-    })
-    .catch(error => console.error(error));
-    });
-} 
