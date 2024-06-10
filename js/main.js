@@ -51,9 +51,77 @@ let loaded = (eventLoaded) => {
         .then(respuesta => respuesta.json())
         .then(datos => {
             console.log(datos); 
+            // Llamar a la función para obtener y mostrar los datos después de enviar
+            obtenerDatos();
+            obtenerConteoPorCategoria();
         })
         .catch(error => console.error(error));
     });
+
+    // Llamar a la función para obtener y mostrar los datos al cargar la página
+    obtenerDatos();
+    obtenerConteoPorCategoria();
 }
 
 window.addEventListener("DOMContentLoaded", loaded);
+
+function obtenerDatos() {
+    fetch('https://dawmproyecto-default-rtdb.firebaseio.com/coleccion.json')
+        .then(response => response.json())
+        .then(data => {
+            const dataTableBody = document.getElementById('dataTableBody');
+            dataTableBody.innerHTML = ''; // Limpiar la tabla antes de añadir los datos
+
+            for (const key in data) {
+                if (data.hasOwnProperty(key)) {
+                    const entry = data[key];
+                    let template = `
+                        <tr>
+                            <td>${entry.nombre}</td>
+                            <td>${entry.email}</td>
+                            <td>${entry.colorFavorito}</td>
+                        </tr>
+                    `;
+                    dataTableBody.innerHTML += template;
+                }
+            }
+        })
+        .catch(error => console.error(error));
+}
+
+function obtenerConteoPorCategoria() {
+    fetch('https://dawmproyecto-default-rtdb.firebaseio.com/coleccion.json')
+        .then(response => response.json())
+        .then(data => {
+            const conteo = {};
+
+            for (const key in data) {
+                if (data.hasOwnProperty(key)) {
+                    const entry = data[key];
+                    const color = entry.colorFavorito;
+
+                    if (conteo[color]) {
+                        conteo[color]++;
+                    } else {
+                        conteo[color] = 1;
+                    }
+                }
+            }
+
+            const tablebody = document.getElementById('tablebody');
+            tablebody.innerHTML = ''; // Limpiar la tabla antes de añadir los datos
+
+            for (const color in conteo) {
+                if (conteo.hasOwnProperty(color)) {
+                    let template = `
+                        <tr>
+                            <td>${color}</td>
+                            <td>${conteo[color]}</td>
+                        </tr>
+                    `;
+                    tablebody.innerHTML += template;
+                }
+            }
+        })
+        .catch(error => console.error(error));
+}
