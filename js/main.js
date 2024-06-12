@@ -94,6 +94,7 @@ function obtenerConteoPorCategoria() {
         .then(response => response.json())
         .then(data => {
             const conteo = {};
+            let totalVotantes = 0;
 
             for (const key in data) {
                 if (data.hasOwnProperty(key)) {
@@ -105,6 +106,7 @@ function obtenerConteoPorCategoria() {
                     } else {
                         conteo[color] = 1;
                     }
+                    totalVotantes++;
                 }
             }
 
@@ -122,6 +124,9 @@ function obtenerConteoPorCategoria() {
                     tablebody.innerHTML += template;
                 }
             }
+
+            // Actualizar el total de votantes
+            document.getElementById('totalVotantes').textContent = totalVotantes;
         })
         .catch(error => console.error(error));
 }
