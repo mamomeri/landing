@@ -66,67 +66,61 @@ let loaded = (eventLoaded) => {
 window.addEventListener("DOMContentLoaded", loaded);
 
 function obtenerDatos() {
-    fetch('https://dawmproyecto-default-rtdb.firebaseio.com/coleccion.json')
+    fetch('https://dawmproyecto-default-rtdb.firebaseio.com/coleccion.json', {
+        method: 'GET'
+    })
         .then(response => response.json())
         .then(data => {
             const dataTableBody = document.getElementById('dataTableBody');
             dataTableBody.innerHTML = ''; // Limpiar la tabla antes de añadir los datos
 
-            for (const key in data) {
-                if (data.hasOwnProperty(key)) {
-                    const entry = data[key];
-                    let template = `
-                        <tr>
-                            <td>${entry.nombre}</td>
-                            <td>${entry.email}</td>
-                            <td>${entry.colorFavorito}</td>
-                        </tr>
-                    `;
-                    dataTableBody.innerHTML += template;
-                }
-            }
+            Object.keys(data).forEach(key => {
+                const entry = data[key];
+                let template = `
+                    <tr>
+                        <td>${entry.nombre}</td>
+                        <td>${entry.email}</td>
+                        <td>${entry.colorFavorito}</td>
+                    </tr>
+                `;
+                dataTableBody.innerHTML += template;
+            });
         })
-        .catch(error => console.error(error));
+        .catch(error => console.error('Error fetching data:', error));
 }
 
 function obtenerConteoPorCategoria() {
-    fetch('https://dawmproyecto-default-rtdb.firebaseio.com/coleccion.json')
+    fetch('https://dawmproyecto-default-rtdb.firebaseio.com/coleccion.json', {
+        method: 'GET'
+    })
         .then(response => response.json())
         .then(data => {
             const conteo = {};
             let totalVotantes = 0;
 
-            for (const key in data) {
-                if (data.hasOwnProperty(key)) {
-                    const entry = data[key];
-                    const color = entry.colorFavorito;
+            Object.keys(data).forEach(key => {
+                const entry = data[key];
+                const color = entry.colorFavorito;
 
-                    if (conteo[color]) {
-                        conteo[color]++;
-                    } else {
-                        conteo[color] = 1;
-                    }
-                    totalVotantes++;
-                }
-            }
+                conteo[color] = (conteo[color] || 0) + 1;
+                totalVotantes++;
+            });
 
             const tablebody = document.getElementById('tablebody');
             tablebody.innerHTML = ''; // Limpiar la tabla antes de añadir los datos
 
-            for (const color in conteo) {
-                if (conteo.hasOwnProperty(color)) {
-                    let template = `
-                        <tr>
-                            <td>${color}</td>
-                            <td>${conteo[color]}</td>
-                        </tr>
-                    `;
-                    tablebody.innerHTML += template;
-                }
-            }
+            Object.keys(conteo).forEach(color => {
+                let template = `
+                    <tr>
+                        <td>${color}</td>
+                        <td>${conteo[color]}</td>
+                    </tr>
+                `;
+                tablebody.innerHTML += template;
+            });
 
             // Actualizar el total de votantes
             document.getElementById('totalVotantes').textContent = totalVotantes;
         })
-        .catch(error => console.error(error));
+        .catch(error => console.error('Error fetching data:', error));
 }
